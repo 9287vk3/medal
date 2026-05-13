@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Магазин Медалек | Получи свою награду!</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(145deg, #1f2b3c 0%, #0e1a2a 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', 'Montserrat', 'Poppins', system-ui, sans-serif;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* главный контейнер */
+        .medal-stage {
+            max-width: 1300px;
+            width: 100%;
+            background: rgba(255,215,150,0.1);
+            backdrop-filter: blur(2px);
+            border-radius: 70px;
+            padding: 30px 20px 50px;
+            box-shadow: 0 25px 45px rgba(0,0,0,0.5), inset 0 1px 2px rgba(255,255,200,0.3);
+            text-align: center;
+            border: 1px solid #ffd96680;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #FFE6B0, #F5B042);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+
+        .sub {
+            color: #cad2db;
+            font-weight: 500;
+            margin-bottom: 35px;
+            font-size: 1.1rem;
+        }
+
+        /* кнопка-триггер */
+        .get-medal-btn {
+            background: radial-gradient(circle at 30% 10%, #ffdd88, #e69f2e);
+            border: none;
+            padding: 18px 38px;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #2a2418;
+            border-radius: 80px;
+            cursor: pointer;
+            box-shadow: 0 12px 0 #8b5a2b, 0 8px 25px black;
+            transition: 0.07s linear;
+            margin-bottom: 55px;
+            font-family: inherit;
+            letter-spacing: 2px;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .get-medal-btn:active {
+            transform: translateY(5px);
+            box-shadow: 0 5px 0 #8b5a2b;
+        }
+
+        /* контейнер для висящих медалей (галерея наград) */
+        .medal-gallery {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 35px;
+            margin-top: 25px;
+            min-height: 280px;
+            align-items: flex-start;
+        }
+
+        /* стиль медали (каждая карточка) */
+        .medal-card {
+            position: relative;
+            width: 200px;
+            background: rgba(0,0,0,0.25);
+            border-radius: 120px 120px 50px 50px;
+            padding: 15px 10px 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            backdrop-filter: blur(6px);
+            transition: all 0.2s ease;
+            animation: fadeInMedal 0.4s cubic-bezier(0.34, 1.2, 0.64, 1);
+        }
+
+        /* ленточка (красная) */
+        .ribbon {
+            position: relative;
+            width: 50px;
+            height: 75px;
+            background: #cd3f3f;
+            margin-top: -12px;
+            margin-bottom: 5px;
+            clip-path: polygon(0% 0%, 100% 0%, 80% 100%, 50% 85%, 20% 100%);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        .ribbon::before,
+        .ribbon::after {
+            content: "";
+            position: absolute;
+            width: 20px;
+            height: 35px;
+            background: #a12323;
+            top: 12px;
+            border-radius: 30%;
+        }
+        .ribbon::before {
+            left: -10px;
+            transform: rotate(-25deg);
+            box-shadow: -2px 2px 4px rgba(0,0,0,0.2);
+        }
+        .ribbon::after {
+            right: -10px;
+            transform: rotate(25deg);
+            box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        /* тело медали */
+        .medal-body {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 35%, #ffe6aa, #e8b43c);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 12px;
+            box-shadow: 0 12px 20px rgba(0,0,0,0.4), inset 0 1px 4px rgba(255,255,200,0.8);
+            border: 2px solid #ffdf80;
+            font-weight: bold;
+            font-size: 0.9rem;
+            color: #2c2112;
+            text-transform: uppercase;
+            background-size: cover;
+            transition: 0.2s;
+        }
+
+        /* разные металлы */
+        .medal-gold .medal-body {
+            background: radial-gradient(circle at 35% 35%, #F9E0A0, #D4AF37);
+            border-color: #FFD966;
+        }
+        .medal-silver .medal-body {
+            background: radial-gradient(circle at 35% 35%, #E2E8F0, #A0AAB5);
+            border-color: #CBD5E1;
+            color: #1e293b;
+        }
+        .medal-bronze .medal-body {
+            background: radial-gradient(circle at 35% 35%, #E2A97A, #B87333);
+            border-color: #CD7F32;
+        }
+
+        .medal-text {
+            font-size: 1rem;
+            font-weight: 800;
+            line-height: 1.3;
+            word-break: break-word;
+            padding: 0 6px;
+            text-shadow: 0 1px 0 rgba(255,255,200,0.5);
+        }
+
+        .medal-sub {
+            font-size: 0.65rem;
+            margin-top: 8px;
+            opacity: 0.9;
+        }
+
+        /* анимация падения */
+        @keyframes dropMedal {
+            0% {
+                transform: translateY(-500px) rotate(-10deg);
+                opacity: 0;
+            }
+            70% {
+                transform: translateY(15px) rotate(3deg);
+            }
+            100% {
+                transform: translateY(0px) rotate(0deg);
+                opacity: 1;
+            }
+        }
+        @keyframes fadeInMedal {
+            from {
+                opacity: 0;
+                transform: scale(0.7) translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        /* удаление кнопкой */
+        .remove-medal {
+            background: rgba(0,0,0,0.6);
+            border: none;
+            color: #ffb347;
+            font-size: 0.7rem;
+            border-radius: 40px;
+            padding: 5px 12px;
+            margin-top: 10px;
+            cursor: pointer;
+            transition: 0.1s;
+            font-weight: bold;
+        }
+
+        .remove-medal:hover {
+            background: #361f0a;
+            color: #ffd966;
+        }
+
+        .gallery-title {
+            font-size: 1.3rem;
+            margin: 25px 0 10px 0;
+            color: #ffdca8;
+            font-weight: 500;
+            letter-spacing: 1px;
+            border-top: 1px dashed #ffcf6e;
+            padding-top: 25px;
+        }
+
+        button, .get-medal-btn {
+            cursor: pointer;
+        }
+
+        footer {
+            margin-top: 35px;
+            font-size: 0.7rem;
+            color: #b9c7d9;
+        }
+    </style>
+</head>
+<body>
+
+<div class="medal-stage">
+    <h1>🏅 АКАДЕМИЯ СЛАВЫ 🏅</h1>
+    <div class="sub">Получи свою уникальную медаль! Нажми и наблюдай за падением награды ✨</div>
+    
+    <button class="get-medal-btn" id="getMedalBtn">🎖️ ПОЛУЧИТЬ МЕДАЛЬКУ! 🎖️</button>
+    
+    <div class="gallery-title">🏆 КОЛЛЕКЦИЯ ТВОИХ НАГРАД 🏆</div>
+    <div class="medal-gallery" id="medalGallery">
+        <!-- Здесь будут появляться медали -->
+        <div style="color: #8faaaf; width:100%; text-align:center; padding:30px;">✨ Нажми на кнопку, и первая медаль упадёт с неба ✨</div>
+    </div>
+    <footer>⭐ Медали падают сверху на красной ленте — каждая уникальна! Нажми "х" чтобы убрать, если коллекция переполнится</footer>
+</div>
+
+<script>
+    // список из 12 уникальных смешных надписей и соответствующий тип медали (золото/серебро/бронза)
+    const medalsData = [
+        { text: "ЗА САМЫЙ ГРОМКИЙ ПУК!", type: "gold", subtext: "Акустический удар" },
+        { text: "ЗА ВЕЛИКИЕ МЫСЛИ!", type: "silver", subtext: "Гениально, Ватсон!" },
+        { text: "ЗА САМЫЙ БОЛЬШОЙ ГЛОТОК ВОДКИ", type: "gold", subtext: "Здоровье не купишь" },
+        { text: "МАСТЕР ОТМАЗОК", type: "bronze", subtext: "Оправданий — вагон" },
+        { text: "ЛЕНИВЫЙ ГЕНИЙ", type: "silver", subtext: "Лежа на диване" },
+        { text: "КОРОЛЬ КАЛЯК-МАЛЯК", type: "gold", subtext: "Художник абстракции" },
+        { text: "ЗА ОТЛИЧНЫЙ СОН В ОФИСЕ", type: "bronze", subtext: "Режим гибернации" },
+        { text: "БЕССМЕННЫЙ ПОЕДАТЕЛЬ ПЕЛЬМЕНЕЙ", type: "gold", subtext: "Гастрорекорд" },
+        { text: "ЗА ДОЛГИЙ ПРОСМОТР ТИКТОКА", type: "silver", subtext: "Пальцы-свайпы" },
+        { text: "ТАРАКАНЬИ БЕГУН", type: "bronze", subtext: "Увидел скидку — не догонишь" },
+        { text: "МАСТЕР НЕПРИЛИЧНЫХ ШУТОК", type: "silver", subtext: "Юмор ниже пояса" },
+        { text: "ЗА ПОБЕДУ НАД СКУКОЙ", type: "gold", subtext: "Эпичная скукота побеждена" }
+    ];
+
+    // ссылка на галерею
+    const gallery = document.getElementById('medalGallery');
+    
+    // Функция для создания элемента медали с классом анимации падения (drop)
+    function createMedalElement(medalInfo, customId = null) {
+        const medalId = customId || Date.now() + '-' + Math.random().toString(36).substr(2, 6);
+        const medalDiv = document.createElement('div');
+        medalDiv.className = `medal-card medal-${medalInfo.type}`;
+        medalDiv.setAttribute('data-medal-id', medalId);
+        medalDiv.style.animation = "dropMedal 0.55s ease-out forwards";
+        
+        // ленточка + медаль
+        const ribbon = document.createElement('div');
+        ribbon.className = 'ribbon';
+        
+        const medalBody = document.createElement('div');
+        medalBody.className = 'medal-body';
+        
+        const textSpan = document.createElement('div');
+        textSpan.className = 'medal-text';
+        textSpan.innerText = medalInfo.text;
+        
+        const subSpan = document.createElement('div');
+        subSpan.className = 'medal-sub';
+        subSpan.innerText = medalInfo.subtext;
+        
+        medalBody.appendChild(textSpan);
+        medalBody.appendChild(subSpan);
+        
+        // кнопка удаления (крестик)
+        const removeBtn = document.createElement('button');
+        removeBtn.innerText = '✖ убрать';
+        removeBtn.className = 'remove-medal';
+        removeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            medalDiv.style.transition = 'opacity 0.2s, transform 0.2s';
+            medalDiv.style.opacity = '0';
+            medalDiv.style.transform = 'scale(0.7)';
+            setTimeout(() => {
+                if (medalDiv.parentNode) medalDiv.remove();
+                updateEmptyPlaceholder();
+            }, 200);
+        });
+        
+        medalDiv.appendChild(ribbon);
+        medalDiv.appendChild(medalBody);
+        medalDiv.appendChild(removeBtn);
+        
+        // лёгкий эффект вибрации при появлении (игровая атмосфера)
+        setTimeout(() => {
+            if(medalDiv) {
+                medalDiv.style.animation = '';
+                medalDiv.style.transform = 'translateY(0px)';
+            }
+        }, 560);
+        
+        return medalDiv;
+    }
+    
+    // функция для обновления заглушки если галерея пуста
+    function updateEmptyPlaceholder() {
+        if (gallery.children.length === 0) {
+            const emptyMsg = document.createElement('div');
+            emptyMsg.id = 'tempEmptyMsg';
+            emptyMsg.style.color = '#8faaaf';
+            emptyMsg.style.width = '100%';
+            emptyMsg.style.textAlign = 'center';
+            emptyMsg.style.padding = '30px';
+            emptyMsg.innerText = '✨ Нажми на кнопку, и медаль упадёт с неба ✨';
+            gallery.appendChild(emptyMsg);
+        } else {
+            const existingEmpty = document.getElementById('tempEmptyMsg');
+            if(existingEmpty) existingEmpty.remove();
+        }
+    }
+    
+    // случайный выбор медали из 12 вариантов
+    function getRandomMedal() {
+        const randomIndex = Math.floor(Math.random() * medalsData.length);
+        return { ...medalsData[randomIndex] };
+    }
+    
+    // обработчик получения медали: падение сверху
+    function dropMedal() {
+        // Убираем заглушку если есть
+        const emptyMsgDiv = document.getElementById('tempEmptyMsg');
+        if (emptyMsgDiv) emptyMsgDiv.remove();
+        
+        const medalInfo = getRandomMedal();
+        const newMedal = createMedalElement(medalInfo);
+        
+        // Добавляем в начало галереи (чтобы свежие были виднее, но падают сверху)
+        gallery.prepend(newMedal);
+        
+        // Эффект "звук" в консоль не нужен, но добавим мини-микроанимацию на кнопке
+        const btn = document.getElementById('getMedalBtn');
+        btn.style.transform = 'scale(0.98)';
+        setTimeout(() => { btn.style.transform = ''; }, 100);
+        
+        // если в коллекции больше 25 медалей — автоматически удаляем самые старые (первые в конце)
+        const allMedals = document.querySelectorAll('.medal-card');
+        if (allMedals.length > 24) {
+            const lastMedal = allMedals[allMedals.length - 1];
+            if (lastMedal) lastMedal.remove();
+        }
+        
+        // маленькая вибрация для веселья (там где поддерживается)
+        if (navigator.vibrate) navigator.vibrate(60);
+        
+        // дополнительный эффект: мигание фона на кнопке (flash)
+        btn.style.boxShadow = '0 5px 0 #8b5a2b, 0 0 15px gold';
+        setTimeout(() => {
+            btn.style.boxShadow = '0 12px 0 #8b5a2b, 0 8px 25px black';
+        }, 150);
+    }
+    
+    // инициализация кнопки
+    document.getElementById('getMedalBtn').addEventListener('click', dropMedal);
+    
+    // также для красоты добавим возможность получить медаль по клавише пробел (для тестов)
+    window.addEventListener('keydown', (e) => {
+        if (e.code === 'Space' && document.activeElement !== document.getElementById('getMedalBtn')) {
+            e.preventDefault();
+            dropMedal();
+        }
+    });
+    
+    // предзагрузка: небольшая анимация для демо — но ждём без спама
+    console.log("Жми на кнопку, медальки падают с неба на ленточках!");
+    
+    // добавим маленький конфетти эффект при клике (просто кайф)
+    function createConfetti() {
+        const colors = ['#FFD966', '#D4AF37', '#C0C0C0', '#CD7F32', '#ffb347'];
+        for (let i=0;i<25;i++) {
+            const conf = document.createElement('div');
+            conf.style.position = 'fixed';
+            conf.style.width = '6px';
+            conf.style.height = '6px';
+            conf.style.backgroundColor = colors[Math.floor(Math.random()*colors.length)];
+            conf.style.left = Math.random() * window.innerWidth + 'px';
+            conf.style.top = '-10px';
+            conf.style.borderRadius = '50%';
+            conf.style.pointerEvents = 'none';
+            conf.style.zIndex = '9999';
+            conf.style.opacity = '0.9';
+            document.body.appendChild(conf);
+            const duration = 800 + Math.random() * 500;
+            const endX = (Math.random() - 0.5) * 120;
+            conf.animate([
+                { transform: 'translateY(0px) rotate(0deg)', opacity: 1 },
+                { transform: `translateY(${window.innerHeight}px) translateX(${endX}px) rotate(360deg)`, opacity: 0 }
+            ], { duration: duration, easing: 'cubic-bezier(0.2,0.9,0.4,1)' });
+            setTimeout(() => conf.remove(), duration);
+        }
+    }
+    
+    // добавим к кнопке конфетти
+    const originalBtnClick = dropMedal;
+    const newDropMedal = () => {
+        createConfetti();
+        originalBtnClick();
+    };
+    document.getElementById('getMedalBtn').removeEventListener('click', dropMedal);
+    document.getElementById('getMedalBtn').addEventListener('click', newDropMedal);
+    window.dropMedal = dropMedal; // сохранение
+        
+    // для порядка, переопределим функцию
+    window.newDropMedal = newDropMedal;
+    // установка слушателя с конфетти
+    const finalBtn = document.getElementById('getMedalBtn');
+    finalBtn.onclick = (e) => {
+        createConfetti();
+        dropMedal();
+    };
+    
+    // инициализация пустого сообщения
+    updateEmptyPlaceholder();
+</script>
+</body>
+</html>
